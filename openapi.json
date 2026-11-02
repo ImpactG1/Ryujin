@@ -1,0 +1,4377 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Ryujin Community Management API",
+    "description": "Backend API and Groq AI Layer for Ryujin Discord Bot & Next.js Dashboard",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/health": {
+      "get": {
+        "tags": [
+          "System"
+        ],
+        "summary": "Health Check",
+        "operationId": "health_check_health_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/guilds/{guild_id}/checkin": {
+      "post": {
+        "tags": [
+          "Attendance & Check-Ins"
+        ],
+        "summary": "Post Checkin",
+        "description": "Record a daily check-in for the authenticated user (or specified user for admin).\nIdempotent: repeating the check-in on the same day returns the existing record without double-counting.",
+        "operationId": "post_checkin_api_v1_guilds__guild_id__checkin_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "guild_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Guild Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CheckInRequest",
+                "default": {}
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CheckInResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/guilds/{guild_id}/streaks/leaderboard": {
+      "get": {
+        "tags": [
+          "Attendance & Check-Ins"
+        ],
+        "summary": "Get Streak Leaderboard",
+        "description": "Get the top check-in streaks for a guild.",
+        "operationId": "get_streak_leaderboard_api_v1_guilds__guild_id__streaks_leaderboard_get",
+        "parameters": [
+          {
+            "name": "guild_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Guild Id"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "default": 10,
+              "title": "Limit"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/LeaderboardEntry"
+                  },
+                  "title": "Response Get Streak Leaderboard Api V1 Guilds  Guild Id  Streaks Leaderboard Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/guilds/{guild_id}/members/{user_id}/streak": {
+      "get": {
+        "tags": [
+          "Attendance & Check-Ins"
+        ],
+        "summary": "Get Member Streak",
+        "description": "Get the streak statistics for a specific guild member.",
+        "operationId": "get_member_streak_api_v1_guilds__guild_id__members__user_id__streak_get",
+        "parameters": [
+          {
+            "name": "guild_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Guild Id"
+            }
+          },
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "User Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserStreakResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/guilds/{guild_id}/events": {
+      "post": {
+        "tags": [
+          "Events & Reminders"
+        ],
+        "summary": "Create Event",
+        "operationId": "create_event_api_v1_guilds__guild_id__events_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "guild_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Guild Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateEventRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EventResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Events & Reminders"
+        ],
+        "summary": "List Events",
+        "operationId": "list_events_api_v1_guilds__guild_id__events_get",
+        "parameters": [
+          {
+            "name": "guild_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Guild Id"
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Status"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "default": 50,
+              "title": "Limit"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/EventResponse"
+                  },
+                  "title": "Response List Events Api V1 Guilds  Guild Id  Events Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/guilds/{guild_id}/events/{event_id}": {
+      "get": {
+        "tags": [
+          "Events & Reminders"
+        ],
+        "summary": "Get Event",
+        "operationId": "get_event_api_v1_guilds__guild_id__events__event_id__get",
+        "parameters": [
+          {
+            "name": "guild_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Guild Id"
+            }
+          },
+          {
+            "name": "event_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Event Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EventResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "Events & Reminders"
+        ],
+        "summary": "Update Event",
+        "operationId": "update_event_api_v1_guilds__guild_id__events__event_id__patch",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "guild_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Guild Id"
+            }
+          },
+          {
+            "name": "event_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Event Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateEventRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EventResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Events & Reminders"
+        ],
+        "summary": "Cancel Event",
+        "operationId": "cancel_event_api_v1_guilds__guild_id__events__event_id__delete",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "guild_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Guild Id"
+            }
+          },
+          {
+            "name": "event_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Event Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EventResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/guilds/{guild_id}/events/{event_id}/attend": {
+      "post": {
+        "tags": [
+          "Events & Reminders"
+        ],
+        "summary": "Attend Event",
+        "operationId": "attend_event_api_v1_guilds__guild_id__events__event_id__attend_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "guild_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Guild Id"
+            }
+          },
+          {
+            "name": "event_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Event Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AttendanceResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/guilds/{guild_id}/achievements": {
+      "post": {
+        "tags": [
+          "Recognition & MOTM"
+        ],
+        "summary": "Create Achievement",
+        "operationId": "create_achievement_api_v1_guilds__guild_id__achievements_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "guild_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Guild Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateAchievementRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AchievementResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/guilds/{guild_id}/members/{user_id}/achievements/progress": {
+      "get": {
+        "tags": [
+          "Recognition & MOTM"
+        ],
+        "summary": "Get Member Achievements Progress",
+        "operationId": "get_member_achievements_progress_api_v1_guilds__guild_id__members__user_id__achievements_progress_get",
+        "parameters": [
+          {
+            "name": "guild_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Guild Id"
+            }
+          },
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "User Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/AchievementProgressResponse"
+                  },
+                  "title": "Response Get Member Achievements Progress Api V1 Guilds  Guild Id  Members  User Id  Achievements Progress Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/guilds/{guild_id}/achievements/{achievement_id}/award": {
+      "post": {
+        "tags": [
+          "Recognition & MOTM"
+        ],
+        "summary": "Award Achievement",
+        "operationId": "award_achievement_api_v1_guilds__guild_id__achievements__achievement_id__award_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "guild_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Guild Id"
+            }
+          },
+          {
+            "name": "achievement_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Achievement Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AwardRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AwardResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/guilds/{guild_id}/motm": {
+      "post": {
+        "tags": [
+          "Recognition & MOTM"
+        ],
+        "summary": "Crown Motm",
+        "operationId": "crown_motm_api_v1_guilds__guild_id__motm_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "guild_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Guild Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CrownMOTMRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MOTMResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/guilds/{guild_id}/motm/history": {
+      "get": {
+        "tags": [
+          "Recognition & MOTM"
+        ],
+        "summary": "Get Motm History",
+        "operationId": "get_motm_history_api_v1_guilds__guild_id__motm_history_get",
+        "parameters": [
+          {
+            "name": "guild_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Guild Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MOTMResponse"
+                  },
+                  "title": "Response Get Motm History Api V1 Guilds  Guild Id  Motm History Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/guilds/{guild_id}/squads": {
+      "post": {
+        "tags": [
+          "Squads Lifecycle"
+        ],
+        "summary": "Create Squad",
+        "operationId": "create_squad_api_v1_guilds__guild_id__squads_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "guild_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Guild Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateSquadRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SquadResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Squads Lifecycle"
+        ],
+        "summary": "List Squads",
+        "operationId": "list_squads_api_v1_guilds__guild_id__squads_get",
+        "parameters": [
+          {
+            "name": "guild_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Guild Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/SquadResponse"
+                  },
+                  "title": "Response List Squads Api V1 Guilds  Guild Id  Squads Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/guilds/{guild_id}/squads/{squad_id}/join-requests": {
+      "post": {
+        "tags": [
+          "Squads Lifecycle"
+        ],
+        "summary": "Request Join Squad",
+        "operationId": "request_join_squad_api_v1_guilds__guild_id__squads__squad_id__join_requests_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "guild_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Guild Id"
+            }
+          },
+          {
+            "name": "squad_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Squad Id"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JoinRequestResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/guilds/{guild_id}/squads/{squad_id}/join-requests/{request_id}/review": {
+      "post": {
+        "tags": [
+          "Squads Lifecycle"
+        ],
+        "summary": "Review Join Request",
+        "operationId": "review_join_request_api_v1_guilds__guild_id__squads__squad_id__join_requests__request_id__review_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "guild_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Guild Id"
+            }
+          },
+          {
+            "name": "squad_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Squad Id"
+            }
+          },
+          {
+            "name": "request_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Request Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReviewRequestPayload"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JoinRequestResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/guilds/{guild_id}/squads/{squad_id}/stats": {
+      "get": {
+        "tags": [
+          "Squads Lifecycle"
+        ],
+        "summary": "Get Squad Stats",
+        "operationId": "get_squad_stats_api_v1_guilds__guild_id__squads__squad_id__stats_get",
+        "parameters": [
+          {
+            "name": "guild_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Guild Id"
+            }
+          },
+          {
+            "name": "squad_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Squad Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/guilds/{guild_id}/recruitment/apply": {
+      "post": {
+        "tags": [
+          "Recruitment"
+        ],
+        "summary": "Public application submission (No auth required)",
+        "description": "Public recruitment application endpoint.\nAnyone can apply without a Discord Bearer token.\nAll sensitive PII (email, full name) is stripped / masked from the response.",
+        "operationId": "submit_application_api_v1_guilds__guild_id__recruitment_apply_post",
+        "parameters": [
+          {
+            "name": "guild_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Guild Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PublicApplicationRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PublicApplicationResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/guilds/{guild_id}/recruitment/applications": {
+      "get": {
+        "tags": [
+          "Recruitment"
+        ],
+        "summary": "List Applications",
+        "description": "Officer-only endpoint to view recruitment applications.",
+        "operationId": "list_applications_api_v1_guilds__guild_id__recruitment_applications_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "guild_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Guild Id"
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Status"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/guilds/{guild_id}/recruitment/applications/{application_id}/review": {
+      "post": {
+        "tags": [
+          "Recruitment"
+        ],
+        "summary": "Review Application",
+        "description": "Officer review of application.\nOn approval, automatically provisions a community member record.",
+        "operationId": "review_application_api_v1_guilds__guild_id__recruitment_applications__application_id__review_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "guild_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Guild Id"
+            }
+          },
+          {
+            "name": "application_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Application Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReviewApplicationRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApplicationReviewResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/guilds/{guild_id}/leave-requests": {
+      "post": {
+        "tags": [
+          "Leave Management"
+        ],
+        "summary": "Submit Leave Request",
+        "operationId": "submit_leave_request_api_v1_guilds__guild_id__leave_requests_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "guild_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Guild Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateLeaveRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LeaveResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Leave Management"
+        ],
+        "summary": "List Leave Requests",
+        "operationId": "list_leave_requests_api_v1_guilds__guild_id__leave_requests_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "guild_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Guild Id"
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Status"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/guilds/{guild_id}/leave-requests/{leave_id}/review": {
+      "post": {
+        "tags": [
+          "Leave Management"
+        ],
+        "summary": "Review Leave Request",
+        "operationId": "review_leave_request_api_v1_guilds__guild_id__leave_requests__leave_id__review_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "guild_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Guild Id"
+            }
+          },
+          {
+            "name": "leave_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Leave Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReviewLeavePayload"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LeaveReviewResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/guilds/{guild_id}/tournaments": {
+      "post": {
+        "tags": [
+          "Tournaments & Standings"
+        ],
+        "summary": "Create Tournament",
+        "operationId": "create_tournament_api_v1_guilds__guild_id__tournaments_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "guild_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Guild Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateTournamentRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TournamentResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/guilds/{guild_id}/tournaments/{tournament_id}/register": {
+      "post": {
+        "tags": [
+          "Tournaments & Standings"
+        ],
+        "summary": "Register Tournament",
+        "operationId": "register_tournament_api_v1_guilds__guild_id__tournaments__tournament_id__register_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "guild_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Guild Id"
+            }
+          },
+          {
+            "name": "tournament_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Tournament Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/guilds/{guild_id}/tournaments/{tournament_id}/generate-bracket": {
+      "post": {
+        "tags": [
+          "Tournaments & Standings"
+        ],
+        "summary": "Generate Bracket",
+        "operationId": "generate_bracket_api_v1_guilds__guild_id__tournaments__tournament_id__generate_bracket_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "guild_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Guild Id"
+            }
+          },
+          {
+            "name": "tournament_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Tournament Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MatchResponse"
+                  },
+                  "title": "Response Generate Bracket Api V1 Guilds  Guild Id  Tournaments  Tournament Id  Generate Bracket Post"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/guilds/{guild_id}/tournaments/{tournament_id}/bracket": {
+      "get": {
+        "tags": [
+          "Tournaments & Standings"
+        ],
+        "summary": "Get Bracket",
+        "operationId": "get_bracket_api_v1_guilds__guild_id__tournaments__tournament_id__bracket_get",
+        "parameters": [
+          {
+            "name": "guild_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Guild Id"
+            }
+          },
+          {
+            "name": "tournament_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Tournament Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MatchResponse"
+                  },
+                  "title": "Response Get Bracket Api V1 Guilds  Guild Id  Tournaments  Tournament Id  Bracket Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/guilds/{guild_id}/tournaments/{tournament_id}/matches/{match_id}/score": {
+      "post": {
+        "tags": [
+          "Tournaments & Standings"
+        ],
+        "summary": "Report Score",
+        "operationId": "report_score_api_v1_guilds__guild_id__tournaments__tournament_id__matches__match_id__score_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "guild_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Guild Id"
+            }
+          },
+          {
+            "name": "tournament_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Tournament Id"
+            }
+          },
+          {
+            "name": "match_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Match Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReportScorePayload"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MatchResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/guilds/{guild_id}/tournaments/{tournament_id}/matches/{match_id}/dispute": {
+      "post": {
+        "tags": [
+          "Tournaments & Standings"
+        ],
+        "summary": "Raise Dispute",
+        "operationId": "raise_dispute_api_v1_guilds__guild_id__tournaments__tournament_id__matches__match_id__dispute_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "guild_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Guild Id"
+            }
+          },
+          {
+            "name": "tournament_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Tournament Id"
+            }
+          },
+          {
+            "name": "match_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Match Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RaiseDisputePayload"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/guilds/{guild_id}/tournaments/{tournament_id}/disputes/{dispute_id}/resolve": {
+      "post": {
+        "tags": [
+          "Tournaments & Standings"
+        ],
+        "summary": "Resolve Dispute",
+        "operationId": "resolve_dispute_api_v1_guilds__guild_id__tournaments__tournament_id__disputes__dispute_id__resolve_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "guild_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Guild Id"
+            }
+          },
+          {
+            "name": "tournament_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Tournament Id"
+            }
+          },
+          {
+            "name": "dispute_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Dispute Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResolveDisputePayload"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/guilds/{guild_id}/tournaments/{tournament_id}/standings": {
+      "get": {
+        "tags": [
+          "Tournaments & Standings"
+        ],
+        "summary": "Get Tournament Standings",
+        "operationId": "get_tournament_standings_api_v1_guilds__guild_id__tournaments__tournament_id__standings_get",
+        "parameters": [
+          {
+            "name": "guild_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Guild Id"
+            }
+          },
+          {
+            "name": "tournament_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Tournament Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/StandingResponse"
+                  },
+                  "title": "Response Get Tournament Standings Api V1 Guilds  Guild Id  Tournaments  Tournament Id  Standings Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/guilds/{guild_id}/moderation/sanctions": {
+      "post": {
+        "tags": [
+          "Moderation & Anti-Abuse"
+        ],
+        "summary": "Apply Sanction",
+        "operationId": "apply_sanction_api_v1_guilds__guild_id__moderation_sanctions_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "guild_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Guild Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateSanctionRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SanctionResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Moderation & Anti-Abuse"
+        ],
+        "summary": "List Sanctions",
+        "operationId": "list_sanctions_api_v1_guilds__guild_id__moderation_sanctions_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "guild_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Guild Id"
+            }
+          },
+          {
+            "name": "target_user_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Target User Id"
+            }
+          },
+          {
+            "name": "active_only",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "default": false,
+              "title": "Active Only"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/SanctionResponse"
+                  },
+                  "title": "Response List Sanctions Api V1 Guilds  Guild Id  Moderation Sanctions Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/guilds/{guild_id}/audit-logs": {
+      "get": {
+        "tags": [
+          "Moderation & Anti-Abuse"
+        ],
+        "summary": "Get Audit Logs",
+        "description": "Get audit logs with role-based PII masking:\n- Admins see full unmasked PII.\n- Officers/Moderators see masked PII.",
+        "operationId": "get_audit_logs_api_v1_guilds__guild_id__audit_logs_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "guild_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Guild Id"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "default": 50,
+              "title": "Limit"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/guilds/{guild_id}/moderation/anomalies": {
+      "get": {
+        "tags": [
+          "Moderation & Anti-Abuse"
+        ],
+        "summary": "Get Anti Abuse Anomalies",
+        "description": "Evaluate real-time anti-abuse anomalies (mass joins, repeated sanctions).\nFlags suspicious behavior for human review and NEVER auto-bans.",
+        "operationId": "get_anti_abuse_anomalies_api_v1_guilds__guild_id__moderation_anomalies_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "guild_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Guild Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/guilds/{guild_id}/analytics/overview": {
+      "get": {
+        "tags": [
+          "Dashboard & Analytics"
+        ],
+        "summary": "Get Guild Analytics Overview",
+        "description": "Get aggregated dashboard metrics for Next.js frontend:\n- Member counts\n- Active check-in streaks & averages\n- Upcoming events\n- Open recruitment and leave requests\n- Moderation sanctions\n- Tournament summaries",
+        "operationId": "get_guild_analytics_overview_api_v1_guilds__guild_id__analytics_overview_get",
+        "parameters": [
+          {
+            "name": "guild_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Guild Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AnalyticsOverviewResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/analytics/overview": {
+      "get": {
+        "tags": [
+          "Dashboard & Analytics"
+        ],
+        "summary": "Get General Analytics Overview",
+        "description": "General dashboard overview route.",
+        "operationId": "get_general_analytics_overview_api_v1_analytics_overview_get",
+        "parameters": [
+          {
+            "name": "guild_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "description": "Guild ID to inspect",
+              "default": 123456789012345678,
+              "title": "Guild Id"
+            },
+            "description": "Guild ID to inspect"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AnalyticsOverviewResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/guilds/{guild_id}/members": {
+      "get": {
+        "tags": [
+          "Dashboard & Analytics"
+        ],
+        "summary": "Get Paginated Members",
+        "description": "Paginated, searchable community members list for dashboard tables.",
+        "operationId": "get_paginated_members_api_v1_guilds__guild_id__members_get",
+        "parameters": [
+          {
+            "name": "guild_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Guild Id"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 1,
+              "title": "Page"
+            }
+          },
+          {
+            "name": "page_size",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "default": 20,
+              "title": "Page Size"
+            }
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Search"
+            }
+          },
+          {
+            "name": "active_only",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "default": false,
+              "title": "Active Only"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginatedMembersResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/guilds/{guild_id}/ai/chat": {
+      "post": {
+        "tags": [
+          "Ryujin Brain (Groq AI)"
+        ],
+        "summary": "Ai Chat",
+        "description": "Chat with Ryujin Brain powered by Groq.\nIncorporates user ID persona, anti-injection, and function calling for server stats.",
+        "operationId": "ai_chat_api_v1_guilds__guild_id__ai_chat_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "guild_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Guild Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AIChatRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AIChatResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/guilds/{guild_id}/ai/summary": {
+      "get": {
+        "tags": [
+          "Ryujin Brain (Groq AI)"
+        ],
+        "summary": "Get Ai Community Summary",
+        "description": "Generate an AI-powered digest summarizing real attendance, event, and tournament stats.",
+        "operationId": "get_ai_community_summary_api_v1_guilds__guild_id__ai_summary_get",
+        "parameters": [
+          {
+            "name": "guild_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Guild Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/guilds/{guild_id}/ai/mod-assist": {
+      "post": {
+        "tags": [
+          "Ryujin Brain (Groq AI)"
+        ],
+        "summary": "Ai Moderation Assist",
+        "description": "Officer-only AI assistant that suggests (never executes) a sanction severity.",
+        "operationId": "ai_moderation_assist_api_v1_guilds__guild_id__ai_mod_assist_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "guild_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Guild Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ModAssistRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/guilds/{guild_id}/ai/dispute-assist": {
+      "post": {
+        "tags": [
+          "Ryujin Brain (Groq AI)"
+        ],
+        "summary": "Ai Dispute Assist",
+        "description": "Officer-only AI assistant that summarizes both sides of a tournament dispute.",
+        "operationId": "ai_dispute_assist_api_v1_guilds__guild_id__ai_dispute_assist_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "guild_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Guild Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DisputeAssistRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "AIChatRequest": {
+        "properties": {
+          "message": {
+            "type": "string",
+            "maxLength": 2000,
+            "minLength": 1,
+            "title": "Message"
+          },
+          "channel_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Channel Id",
+            "default": 1000000000
+          }
+        },
+        "type": "object",
+        "required": [
+          "message"
+        ],
+        "title": "AIChatRequest"
+      },
+      "AIChatResponse": {
+        "properties": {
+          "reply": {
+            "type": "string",
+            "title": "Reply"
+          }
+        },
+        "type": "object",
+        "required": [
+          "reply"
+        ],
+        "title": "AIChatResponse"
+      },
+      "AchievementProgressResponse": {
+        "properties": {
+          "achievement_id": {
+            "type": "integer",
+            "title": "Achievement Id"
+          },
+          "code": {
+            "type": "string",
+            "title": "Code"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description"
+          },
+          "criteria_type": {
+            "type": "string",
+            "title": "Criteria Type"
+          },
+          "threshold": {
+            "type": "integer",
+            "title": "Threshold"
+          },
+          "badge_icon": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Badge Icon"
+          },
+          "current_value": {
+            "type": "integer",
+            "title": "Current Value"
+          },
+          "percentage": {
+            "type": "number",
+            "title": "Percentage"
+          },
+          "is_unlocked": {
+            "type": "boolean",
+            "title": "Is Unlocked"
+          },
+          "awarded_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Awarded At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "achievement_id",
+          "code",
+          "name",
+          "description",
+          "criteria_type",
+          "threshold",
+          "badge_icon",
+          "current_value",
+          "percentage",
+          "is_unlocked",
+          "awarded_at"
+        ],
+        "title": "AchievementProgressResponse"
+      },
+      "AchievementResponse": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "guild_id": {
+            "type": "integer",
+            "title": "Guild Id"
+          },
+          "code": {
+            "type": "string",
+            "title": "Code"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description"
+          },
+          "criteria_type": {
+            "type": "string",
+            "title": "Criteria Type"
+          },
+          "threshold": {
+            "type": "integer",
+            "title": "Threshold"
+          },
+          "badge_icon": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Badge Icon"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "guild_id",
+          "code",
+          "name",
+          "description",
+          "criteria_type",
+          "threshold",
+          "badge_icon"
+        ],
+        "title": "AchievementResponse"
+      },
+      "AnalyticsOverviewResponse": {
+        "properties": {
+          "guild_id": {
+            "type": "integer",
+            "title": "Guild Id"
+          },
+          "members": {
+            "$ref": "#/components/schemas/MembersOverview"
+          },
+          "attendance": {
+            "$ref": "#/components/schemas/AttendanceOverview"
+          },
+          "events": {
+            "$ref": "#/components/schemas/EventsOverview"
+          },
+          "open_requests": {
+            "$ref": "#/components/schemas/OpenRequestsOverview"
+          },
+          "moderation": {
+            "$ref": "#/components/schemas/ModerationOverview"
+          },
+          "tournaments": {
+            "$ref": "#/components/schemas/TournamentsOverview"
+          }
+        },
+        "type": "object",
+        "required": [
+          "guild_id",
+          "members",
+          "attendance",
+          "events",
+          "open_requests",
+          "moderation",
+          "tournaments"
+        ],
+        "title": "AnalyticsOverviewResponse"
+      },
+      "ApplicationReviewResponse": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "reviewer_id": {
+            "type": "string",
+            "title": "Reviewer Id"
+          },
+          "reviewed_at": {
+            "type": "string",
+            "title": "Reviewed At"
+          },
+          "auto_provisioned_member_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Auto Provisioned Member Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "status",
+          "reviewer_id",
+          "reviewed_at",
+          "auto_provisioned_member_id"
+        ],
+        "title": "ApplicationReviewResponse"
+      },
+      "AttendanceOverview": {
+        "properties": {
+          "active_streaks": {
+            "type": "integer",
+            "title": "Active Streaks"
+          },
+          "average_streak": {
+            "type": "number",
+            "title": "Average Streak"
+          }
+        },
+        "type": "object",
+        "required": [
+          "active_streaks",
+          "average_streak"
+        ],
+        "title": "AttendanceOverview"
+      },
+      "AttendanceResponse": {
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "title": "Success"
+          },
+          "already_marked": {
+            "type": "boolean",
+            "title": "Already Marked"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "marked_at": {
+            "type": "string",
+            "title": "Marked At"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message"
+          }
+        },
+        "type": "object",
+        "required": [
+          "success",
+          "already_marked",
+          "status",
+          "marked_at",
+          "message"
+        ],
+        "title": "AttendanceResponse"
+      },
+      "AwardRequest": {
+        "properties": {
+          "target_user_id": {
+            "type": "integer",
+            "title": "Target User Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "target_user_id"
+        ],
+        "title": "AwardRequest"
+      },
+      "AwardResponse": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "guild_id": {
+            "type": "integer",
+            "title": "Guild Id"
+          },
+          "discord_user_id": {
+            "type": "string",
+            "title": "Discord User Id"
+          },
+          "achievement_id": {
+            "type": "integer",
+            "title": "Achievement Id"
+          },
+          "awarded_at": {
+            "type": "string",
+            "title": "Awarded At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "guild_id",
+          "discord_user_id",
+          "achievement_id",
+          "awarded_at"
+        ],
+        "title": "AwardResponse"
+      },
+      "CheckInRequest": {
+        "properties": {
+          "user_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "User Id",
+            "description": "Optional target user ID if called by admin/bot"
+          }
+        },
+        "type": "object",
+        "title": "CheckInRequest"
+      },
+      "CheckInResponse": {
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "title": "Success"
+          },
+          "already_checked_in": {
+            "type": "boolean",
+            "title": "Already Checked In"
+          },
+          "streak_count": {
+            "type": "integer",
+            "title": "Streak Count"
+          },
+          "longest_streak": {
+            "type": "integer",
+            "title": "Longest Streak"
+          },
+          "checkin_date": {
+            "type": "string",
+            "title": "Checkin Date"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message"
+          }
+        },
+        "type": "object",
+        "required": [
+          "success",
+          "already_checked_in",
+          "streak_count",
+          "longest_streak",
+          "checkin_date",
+          "message"
+        ],
+        "title": "CheckInResponse"
+      },
+      "ConflictingEventSummary": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "start_time": {
+            "type": "string",
+            "title": "Start Time"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "title",
+          "start_time"
+        ],
+        "title": "ConflictingEventSummary"
+      },
+      "CreateAchievementRequest": {
+        "properties": {
+          "code": {
+            "type": "string",
+            "maxLength": 50,
+            "title": "Code"
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 100,
+            "title": "Name"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description"
+          },
+          "criteria_type": {
+            "type": "string",
+            "title": "Criteria Type",
+            "description": "'streak' or 'events_attended'"
+          },
+          "threshold": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Threshold"
+          },
+          "badge_icon": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Badge Icon"
+          }
+        },
+        "type": "object",
+        "required": [
+          "code",
+          "name",
+          "description",
+          "criteria_type",
+          "threshold"
+        ],
+        "title": "CreateAchievementRequest"
+      },
+      "CreateEventRequest": {
+        "properties": {
+          "title": {
+            "type": "string",
+            "maxLength": 150,
+            "title": "Title"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "start_time": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Start Time"
+          },
+          "end_time": {
+            "type": "string",
+            "format": "date-time",
+            "title": "End Time"
+          },
+          "target_squad_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Target Squad Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "title",
+          "start_time",
+          "end_time"
+        ],
+        "title": "CreateEventRequest"
+      },
+      "CreateLeaveRequest": {
+        "properties": {
+          "start_date": {
+            "type": "string",
+            "format": "date",
+            "title": "Start Date"
+          },
+          "end_date": {
+            "type": "string",
+            "format": "date",
+            "title": "End Date"
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 3,
+            "title": "Reason"
+          }
+        },
+        "type": "object",
+        "required": [
+          "start_date",
+          "end_date",
+          "reason"
+        ],
+        "title": "CreateLeaveRequest"
+      },
+      "CreateSanctionRequest": {
+        "properties": {
+          "target_user_id": {
+            "type": "integer",
+            "title": "Target User Id"
+          },
+          "sanction_type": {
+            "type": "string",
+            "pattern": "^(warn|mute|kick|ban)$",
+            "title": "Sanction Type"
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 3,
+            "title": "Reason"
+          },
+          "duration_minutes": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 1.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Duration Minutes"
+          }
+        },
+        "type": "object",
+        "required": [
+          "target_user_id",
+          "sanction_type",
+          "reason"
+        ],
+        "title": "CreateSanctionRequest"
+      },
+      "CreateSquadRequest": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 100,
+            "title": "Name"
+          },
+          "captain_id": {
+            "type": "integer",
+            "title": "Captain Id"
+          },
+          "capacity": {
+            "type": "integer",
+            "maximum": 100.0,
+            "minimum": 1.0,
+            "title": "Capacity",
+            "default": 10
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "captain_id"
+        ],
+        "title": "CreateSquadRequest"
+      },
+      "CreateTournamentRequest": {
+        "properties": {
+          "title": {
+            "type": "string",
+            "maxLength": 150,
+            "title": "Title"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "max_participants": {
+            "type": "integer",
+            "maximum": 128.0,
+            "minimum": 2.0,
+            "title": "Max Participants",
+            "default": 16
+          }
+        },
+        "type": "object",
+        "required": [
+          "title"
+        ],
+        "title": "CreateTournamentRequest"
+      },
+      "CrownMOTMRequest": {
+        "properties": {
+          "year_month": {
+            "type": "string",
+            "pattern": "^\\d{4}-\\d{2}$",
+            "title": "Year Month",
+            "description": "Format: YYYY-MM"
+          },
+          "target_user_id": {
+            "type": "integer",
+            "title": "Target User Id"
+          },
+          "reason": {
+            "type": "string",
+            "title": "Reason"
+          }
+        },
+        "type": "object",
+        "required": [
+          "year_month",
+          "target_user_id",
+          "reason"
+        ],
+        "title": "CrownMOTMRequest"
+      },
+      "DisputeAssistRequest": {
+        "properties": {
+          "match_info": {
+            "type": "string",
+            "title": "Match Info"
+          },
+          "participant1_claim": {
+            "type": "string",
+            "title": "Participant1 Claim"
+          },
+          "participant2_claim": {
+            "type": "string",
+            "title": "Participant2 Claim"
+          }
+        },
+        "type": "object",
+        "required": [
+          "match_info",
+          "participant1_claim",
+          "participant2_claim"
+        ],
+        "title": "DisputeAssistRequest"
+      },
+      "EventResponse": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "guild_id": {
+            "type": "integer",
+            "title": "Guild Id"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "start_time": {
+            "type": "string",
+            "title": "Start Time"
+          },
+          "end_time": {
+            "type": "string",
+            "title": "End Time"
+          },
+          "creator_id": {
+            "type": "integer",
+            "title": "Creator Id"
+          },
+          "target_squad_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Target Squad Id"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "guild_id",
+          "title",
+          "description",
+          "start_time",
+          "end_time",
+          "creator_id",
+          "target_squad_id",
+          "status"
+        ],
+        "title": "EventResponse"
+      },
+      "EventsOverview": {
+        "properties": {
+          "upcoming_count": {
+            "type": "integer",
+            "title": "Upcoming Count"
+          },
+          "next_events": {
+            "items": {
+              "$ref": "#/components/schemas/NextEventSummary"
+            },
+            "type": "array",
+            "title": "Next Events"
+          }
+        },
+        "type": "object",
+        "required": [
+          "upcoming_count",
+          "next_events"
+        ],
+        "title": "EventsOverview"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "JoinRequestResponse": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "squad_id": {
+            "type": "integer",
+            "title": "Squad Id"
+          },
+          "discord_user_id": {
+            "type": "string",
+            "title": "Discord User Id"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "reviewer_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reviewer Id"
+          },
+          "reviewed_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reviewed At"
+          },
+          "notes": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Notes"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "squad_id",
+          "discord_user_id",
+          "status",
+          "reviewer_id",
+          "reviewed_at",
+          "notes"
+        ],
+        "title": "JoinRequestResponse"
+      },
+      "LeaderboardEntry": {
+        "properties": {
+          "user_id": {
+            "type": "string",
+            "title": "User Id"
+          },
+          "current_streak": {
+            "type": "integer",
+            "title": "Current Streak"
+          },
+          "longest_streak": {
+            "type": "integer",
+            "title": "Longest Streak"
+          },
+          "last_checkin_date": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Checkin Date"
+          }
+        },
+        "type": "object",
+        "required": [
+          "user_id",
+          "current_streak",
+          "longest_streak",
+          "last_checkin_date"
+        ],
+        "title": "LeaderboardEntry"
+      },
+      "LeaveResponse": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "guild_id": {
+            "type": "integer",
+            "title": "Guild Id"
+          },
+          "discord_user_id": {
+            "type": "string",
+            "title": "Discord User Id"
+          },
+          "start_date": {
+            "type": "string",
+            "title": "Start Date"
+          },
+          "end_date": {
+            "type": "string",
+            "title": "End Date"
+          },
+          "reason": {
+            "type": "string",
+            "title": "Reason"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "conflicting_events": {
+            "items": {
+              "$ref": "#/components/schemas/ConflictingEventSummary"
+            },
+            "type": "array",
+            "title": "Conflicting Events",
+            "default": []
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "guild_id",
+          "discord_user_id",
+          "start_date",
+          "end_date",
+          "reason",
+          "status"
+        ],
+        "title": "LeaveResponse"
+      },
+      "LeaveReviewResponse": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "reviewer_id": {
+            "type": "string",
+            "title": "Reviewer Id"
+          },
+          "reviewed_at": {
+            "type": "string",
+            "title": "Reviewed At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "status",
+          "reviewer_id",
+          "reviewed_at"
+        ],
+        "title": "LeaveReviewResponse"
+      },
+      "MOTMResponse": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "guild_id": {
+            "type": "integer",
+            "title": "Guild Id"
+          },
+          "year_month": {
+            "type": "string",
+            "title": "Year Month"
+          },
+          "discord_user_id": {
+            "type": "string",
+            "title": "Discord User Id"
+          },
+          "reason": {
+            "type": "string",
+            "title": "Reason"
+          },
+          "crowned_by": {
+            "type": "string",
+            "title": "Crowned By"
+          },
+          "awarded_at": {
+            "type": "string",
+            "title": "Awarded At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "guild_id",
+          "year_month",
+          "discord_user_id",
+          "reason",
+          "crowned_by",
+          "awarded_at"
+        ],
+        "title": "MOTMResponse"
+      },
+      "MatchResponse": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "tournament_id": {
+            "type": "integer",
+            "title": "Tournament Id"
+          },
+          "round_number": {
+            "type": "integer",
+            "title": "Round Number"
+          },
+          "match_number": {
+            "type": "integer",
+            "title": "Match Number"
+          },
+          "participant1_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Participant1 Id"
+          },
+          "participant2_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Participant2 Id"
+          },
+          "score1": {
+            "type": "integer",
+            "title": "Score1"
+          },
+          "score2": {
+            "type": "integer",
+            "title": "Score2"
+          },
+          "winner_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Winner Id"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "tournament_id",
+          "round_number",
+          "match_number",
+          "participant1_id",
+          "participant2_id",
+          "score1",
+          "score2",
+          "winner_id",
+          "status"
+        ],
+        "title": "MatchResponse"
+      },
+      "MembersOverview": {
+        "properties": {
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          },
+          "active": {
+            "type": "integer",
+            "title": "Active"
+          }
+        },
+        "type": "object",
+        "required": [
+          "total",
+          "active"
+        ],
+        "title": "MembersOverview"
+      },
+      "ModAssistRequest": {
+        "properties": {
+          "violation_text": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Violation Text"
+          }
+        },
+        "type": "object",
+        "required": [
+          "violation_text"
+        ],
+        "title": "ModAssistRequest"
+      },
+      "ModerationOverview": {
+        "properties": {
+          "active_sanctions_count": {
+            "type": "integer",
+            "title": "Active Sanctions Count"
+          },
+          "breakdown": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "type": "object",
+            "title": "Breakdown"
+          }
+        },
+        "type": "object",
+        "required": [
+          "active_sanctions_count",
+          "breakdown"
+        ],
+        "title": "ModerationOverview"
+      },
+      "NextEventSummary": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "start_time": {
+            "type": "string",
+            "title": "Start Time"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "title",
+          "start_time"
+        ],
+        "title": "NextEventSummary"
+      },
+      "OpenRequestsOverview": {
+        "properties": {
+          "recruitment_applications": {
+            "type": "integer",
+            "title": "Recruitment Applications"
+          },
+          "leave_requests": {
+            "type": "integer",
+            "title": "Leave Requests"
+          },
+          "total_open": {
+            "type": "integer",
+            "title": "Total Open"
+          }
+        },
+        "type": "object",
+        "required": [
+          "recruitment_applications",
+          "leave_requests",
+          "total_open"
+        ],
+        "title": "OpenRequestsOverview"
+      },
+      "PaginatedMembersResponse": {
+        "properties": {
+          "items": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Items"
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          },
+          "page": {
+            "type": "integer",
+            "title": "Page"
+          },
+          "page_size": {
+            "type": "integer",
+            "title": "Page Size"
+          },
+          "total_pages": {
+            "type": "integer",
+            "title": "Total Pages"
+          }
+        },
+        "type": "object",
+        "required": [
+          "items",
+          "total",
+          "page",
+          "page_size",
+          "total_pages"
+        ],
+        "title": "PaginatedMembersResponse"
+      },
+      "PublicApplicationRequest": {
+        "properties": {
+          "discord_tag": {
+            "type": "string",
+            "maxLength": 100,
+            "title": "Discord Tag"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "title": "Email"
+          },
+          "full_name": {
+            "type": "string",
+            "maxLength": 150,
+            "title": "Full Name"
+          },
+          "experience": {
+            "type": "string",
+            "title": "Experience"
+          },
+          "answers": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Answers"
+          },
+          "discord_user_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Discord User Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "discord_tag",
+          "email",
+          "full_name",
+          "experience"
+        ],
+        "title": "PublicApplicationRequest"
+      },
+      "PublicApplicationResponse": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "guild_id": {
+            "type": "integer",
+            "title": "Guild Id"
+          },
+          "discord_tag": {
+            "type": "string",
+            "title": "Discord Tag"
+          },
+          "email": {
+            "type": "string",
+            "title": "Email"
+          },
+          "full_name": {
+            "type": "string",
+            "title": "Full Name"
+          },
+          "experience": {
+            "type": "string",
+            "title": "Experience"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "created_at": {
+            "type": "string",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "guild_id",
+          "discord_tag",
+          "email",
+          "full_name",
+          "experience",
+          "status",
+          "created_at"
+        ],
+        "title": "PublicApplicationResponse"
+      },
+      "RaiseDisputePayload": {
+        "properties": {
+          "reason": {
+            "type": "string",
+            "minLength": 5,
+            "title": "Reason"
+          }
+        },
+        "type": "object",
+        "required": [
+          "reason"
+        ],
+        "title": "RaiseDisputePayload"
+      },
+      "ReportScorePayload": {
+        "properties": {
+          "score1": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Score1"
+          },
+          "score2": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Score2"
+          }
+        },
+        "type": "object",
+        "required": [
+          "score1",
+          "score2"
+        ],
+        "title": "ReportScorePayload"
+      },
+      "ResolveDisputePayload": {
+        "properties": {
+          "winner_id": {
+            "type": "integer",
+            "title": "Winner Id"
+          },
+          "officer_notes": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Officer Notes"
+          }
+        },
+        "type": "object",
+        "required": [
+          "winner_id"
+        ],
+        "title": "ResolveDisputePayload"
+      },
+      "ReviewApplicationRequest": {
+        "properties": {
+          "decision": {
+            "type": "string",
+            "pattern": "^(approved|rejected)$",
+            "title": "Decision"
+          }
+        },
+        "type": "object",
+        "required": [
+          "decision"
+        ],
+        "title": "ReviewApplicationRequest"
+      },
+      "ReviewLeavePayload": {
+        "properties": {
+          "decision": {
+            "type": "string",
+            "pattern": "^(approved|rejected)$",
+            "title": "Decision"
+          }
+        },
+        "type": "object",
+        "required": [
+          "decision"
+        ],
+        "title": "ReviewLeavePayload"
+      },
+      "ReviewRequestPayload": {
+        "properties": {
+          "decision": {
+            "type": "string",
+            "pattern": "^(approved|rejected)$",
+            "title": "Decision"
+          },
+          "notes": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Notes"
+          }
+        },
+        "type": "object",
+        "required": [
+          "decision"
+        ],
+        "title": "ReviewRequestPayload"
+      },
+      "SanctionResponse": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "guild_id": {
+            "type": "integer",
+            "title": "Guild Id"
+          },
+          "target_user_id": {
+            "type": "string",
+            "title": "Target User Id"
+          },
+          "moderator_id": {
+            "type": "string",
+            "title": "Moderator Id"
+          },
+          "sanction_type": {
+            "type": "string",
+            "title": "Sanction Type"
+          },
+          "reason": {
+            "type": "string",
+            "title": "Reason"
+          },
+          "duration_minutes": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Duration Minutes"
+          },
+          "expires_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Expires At"
+          },
+          "is_active": {
+            "type": "boolean",
+            "title": "Is Active"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "guild_id",
+          "target_user_id",
+          "moderator_id",
+          "sanction_type",
+          "reason",
+          "duration_minutes",
+          "expires_at",
+          "is_active"
+        ],
+        "title": "SanctionResponse"
+      },
+      "SquadResponse": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "guild_id": {
+            "type": "integer",
+            "title": "Guild Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "captain_id": {
+            "type": "string",
+            "title": "Captain Id"
+          },
+          "capacity": {
+            "type": "integer",
+            "title": "Capacity"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "guild_id",
+          "name",
+          "captain_id",
+          "capacity"
+        ],
+        "title": "SquadResponse"
+      },
+      "StandingResponse": {
+        "properties": {
+          "rank": {
+            "type": "integer",
+            "title": "Rank"
+          },
+          "discord_user_id": {
+            "type": "string",
+            "title": "Discord User Id"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          }
+        },
+        "type": "object",
+        "required": [
+          "rank",
+          "discord_user_id",
+          "status"
+        ],
+        "title": "StandingResponse"
+      },
+      "TournamentResponse": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "guild_id": {
+            "type": "integer",
+            "title": "Guild Id"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "max_participants": {
+            "type": "integer",
+            "title": "Max Participants"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "guild_id",
+          "title",
+          "description",
+          "max_participants",
+          "status"
+        ],
+        "title": "TournamentResponse"
+      },
+      "TournamentsOverview": {
+        "properties": {
+          "active_tournaments": {
+            "type": "integer",
+            "title": "Active Tournaments"
+          }
+        },
+        "type": "object",
+        "required": [
+          "active_tournaments"
+        ],
+        "title": "TournamentsOverview"
+      },
+      "UpdateEventRequest": {
+        "properties": {
+          "title": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Title"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "start_time": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Start Time"
+          },
+          "end_time": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "End Time"
+          },
+          "target_squad_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Target Squad Id"
+          }
+        },
+        "type": "object",
+        "title": "UpdateEventRequest"
+      },
+      "UserStreakResponse": {
+        "properties": {
+          "user_id": {
+            "type": "string",
+            "title": "User Id"
+          },
+          "current_streak": {
+            "type": "integer",
+            "title": "Current Streak"
+          },
+          "longest_streak": {
+            "type": "integer",
+            "title": "Longest Streak"
+          },
+          "last_checkin_date": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Checkin Date"
+          }
+        },
+        "type": "object",
+        "required": [
+          "user_id",
+          "current_streak",
+          "longest_streak",
+          "last_checkin_date"
+        ],
+        "title": "UserStreakResponse"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "ctx": {
+            "type": "object",
+            "title": "Context"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      }
+    },
+    "securitySchemes": {
+      "HTTPBearer": {
+        "type": "http",
+        "scheme": "bearer"
+      }
+    }
+  }
+}
