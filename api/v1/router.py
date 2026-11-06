@@ -10,6 +10,7 @@ from api.v1.recognition import router as recognition_router
 from api.v1.recruitment import router as recruitment_router
 from api.v1.squads import router as squads_router
 from api.v1.tournaments import router as tournaments_router
+from api.v1.wisdom import router as wisdom_router
 
 api_router = APIRouter()
 api_router.include_router(checkin_router)
@@ -22,4 +23,5 @@ api_router.include_router(tournaments_router)
 api_router.include_router(moderation_router)
 api_router.include_router(analytics_router)
 api_router.include_router(levels_router)
+api_router.include_router(wisdom_router)
 api_router.include_router(ai_router)

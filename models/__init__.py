@@ -11,6 +11,7 @@ from models.tournament import Tournament, TournamentParticipant, TournamentMatch
 from models.moderation import ModerationSanction, AuditLog
 from models.ai import AIConversation, AIUsageDaily
 from models.level import MemberLevel, RankHistory
+from models.wisdom import DailyWisdom
 
 __all__ = [
     "Base",
@@ -43,5 +44,6 @@ __all__ = [
     "AIUsageDaily",
     "MemberLevel",
     "RankHistory",
+    "DailyWisdom",
 ]
 

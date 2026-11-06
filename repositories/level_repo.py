@@ -101,7 +101,7 @@ class LevelRepository:
                 RankHistory.guild_id == guild_id,
                 RankHistory.discord_user_id == user_id,
             )
-            .order_by(desc(RankHistory.created_at))
+            .order_by(desc(RankHistory.created_at), desc(RankHistory.id))
             .limit(limit)
         )
         result = await self.session.execute(stmt)
@@ -119,7 +119,7 @@ class LevelRepository:
                 RankHistory.guild_id == guild_id,
                 RankHistory.discord_user_id == user_id,
             )
-            .order_by(desc(RankHistory.created_at))
+            .order_by(desc(RankHistory.created_at), desc(RankHistory.id))
             .limit(1)
         )
         result = await self.session.execute(stmt)

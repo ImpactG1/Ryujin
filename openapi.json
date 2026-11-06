@@ -2835,6 +2835,161 @@
         }
       }
     },
+    "/api/v1/guilds/{guild_id}/wisdom/today": {
+      "get": {
+        "tags": [
+          "Daily Wisdom"
+        ],
+        "summary": "Get Today Wisdom",
+        "description": "Fetch today's unlocked wisdom for the guild, if any.",
+        "operationId": "get_today_wisdom_api_v1_guilds__guild_id__wisdom_today_get",
+        "parameters": [
+          {
+            "name": "guild_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Guild Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TodayWisdomStatus"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/guilds/{guild_id}/wisdom/unlock": {
+      "post": {
+        "tags": [
+          "Daily Wisdom"
+        ],
+        "summary": "Unlock Daily Wisdom",
+        "description": "Unlock today's server wisdom quote.\nCan be triggered by anyone, but only once per day for the entire server.",
+        "operationId": "unlock_daily_wisdom_api_v1_guilds__guild_id__wisdom_unlock_post",
+        "parameters": [
+          {
+            "name": "guild_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Guild Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UnlockWisdomRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WisdomResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/guilds/{guild_id}/wisdom/history": {
+      "get": {
+        "tags": [
+          "Daily Wisdom"
+        ],
+        "summary": "Get Wisdom History",
+        "description": "Fetch past unlocked wisdom quotes for the community dashboard.",
+        "operationId": "get_wisdom_history_api_v1_guilds__guild_id__wisdom_history_get",
+        "parameters": [
+          {
+            "name": "guild_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Guild Id"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 50,
+              "minimum": 1,
+              "default": 15,
+              "title": "Limit"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/WisdomHistoryItem"
+                  },
+                  "title": "Response Get Wisdom History Api V1 Guilds  Guild Id  Wisdom History Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/guilds/{guild_id}/ai/chat": {
       "post": {
         "tags": [
@@ -4858,6 +5013,31 @@
         ],
         "title": "StandingResponse"
       },
+      "TodayWisdomStatus": {
+        "properties": {
+          "unlocked": {
+            "type": "boolean",
+            "title": "Unlocked"
+          },
+          "data": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Data"
+          }
+        },
+        "type": "object",
+        "required": [
+          "unlocked"
+        ],
+        "title": "TodayWisdomStatus"
+      },
       "TournamentResponse": {
         "properties": {
           "id": {
@@ -4915,6 +5095,19 @@
           "active_tournaments"
         ],
         "title": "TournamentsOverview"
+      },
+      "UnlockWisdomRequest": {
+        "properties": {
+          "user_id": {
+            "type": "integer",
+            "title": "User Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "user_id"
+        ],
+        "title": "UnlockWisdomRequest"
       },
       "UpdateEventRequest": {
         "properties": {
@@ -5053,6 +5246,87 @@
           "type"
         ],
         "title": "ValidationError"
+      },
+      "WisdomHistoryItem": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "date": {
+            "type": "string",
+            "title": "Date"
+          },
+          "quote": {
+            "type": "string",
+            "title": "Quote"
+          },
+          "author": {
+            "type": "string",
+            "title": "Author"
+          },
+          "unlocked_by_user_id": {
+            "type": "string",
+            "title": "Unlocked By User Id"
+          },
+          "unlocked_at": {
+            "type": "string",
+            "title": "Unlocked At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "date",
+          "quote",
+          "author",
+          "unlocked_by_user_id",
+          "unlocked_at"
+        ],
+        "title": "WisdomHistoryItem"
+      },
+      "WisdomResponse": {
+        "properties": {
+          "already_unlocked": {
+            "type": "boolean",
+            "title": "Already Unlocked"
+          },
+          "quote": {
+            "type": "string",
+            "title": "Quote"
+          },
+          "author": {
+            "type": "string",
+            "title": "Author"
+          },
+          "unlocked_by_user_id": {
+            "type": "string",
+            "title": "Unlocked By User Id"
+          },
+          "unlocked_at": {
+            "type": "string",
+            "title": "Unlocked At"
+          },
+          "date": {
+            "type": "string",
+            "title": "Date"
+          },
+          "shy_quote": {
+            "type": "string",
+            "title": "Shy Quote"
+          }
+        },
+        "type": "object",
+        "required": [
+          "already_unlocked",
+          "quote",
+          "author",
+          "unlocked_by_user_id",
+          "unlocked_at",
+          "date",
+          "shy_quote"
+        ],
+        "title": "WisdomResponse"
       }
     },
     "securitySchemes": {

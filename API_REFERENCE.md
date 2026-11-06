@@ -196,7 +196,31 @@ CORS Enabled Origins: `http://localhost:3000`
 
 ---
 
-## 10. Dashboard Analytics Overview
+## 10. Daily Wisdom (Server-Wide Once Per Day)
+- **GET `/guilds/{guild_id}/wisdom/today`**
+  - Checks if today's server wisdom has already been unlocked.
+  - Response:
+    ```json
+    {
+      "unlocked": true,
+      "data": {
+        "quote": "A tree that never faces the wind will never know how strong its roots are.",
+        "author": "Ryujin",
+        "unlocked_by_user_id": "123456789",
+        "unlocked_at": "2026-11-06T10:00:00Z",
+        "date": "2026-11-06"
+      }
+    }
+    ```
+- **POST `/guilds/{guild_id}/wisdom/unlock`**
+  - Body: `{"user_id": 123456789}`
+  - Unlocks today's quote for the server. Idempotent: if another member already unlocked it today, returns the existing quote with `"already_unlocked": true`.
+- **GET `/guilds/{guild_id}/wisdom/history?limit=15`**
+  - Fetches timeline of past unlocked wisdom quotes for the dashboard.
+
+---
+
+## 11. Dashboard Analytics Overview
 - **GET `/api/v1/analytics/overview`** (or `/guilds/{guild_id}/analytics/overview`)
   - Response:
     ```json
@@ -215,7 +239,7 @@ CORS Enabled Origins: `http://localhost:3000`
 
 ---
 
-## 10. Groq AI Layer ("Ryujin Brain")
+## 12. Groq AI Layer ("Ryujin Brain")
 - **POST `/guilds/{guild_id}/ai/chat`**
   - Body: `{"message": "When is the next scrimmage?", "channel_id": 1000000000}`
   - Employs function calling against real DB events/streaks (never hallucinates facts).
