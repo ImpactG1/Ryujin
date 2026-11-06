@@ -2393,6 +2393,184 @@
         }
       }
     },
+    "/api/v1/guilds/{guild_id}/members/{user_id}/rank": {
+      "get": {
+        "tags": [
+          "Levels & Activity EXP Tracker"
+        ],
+        "summary": "Get Member Rank",
+        "description": "Fetch rank card, current level, progress, and message count for a member.",
+        "operationId": "get_member_rank_api_v1_guilds__guild_id__members__user_id__rank_get",
+        "parameters": [
+          {
+            "name": "guild_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Guild Id"
+            }
+          },
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "User Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RankCardResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/guilds/{guild_id}/levels/leaderboard": {
+      "get": {
+        "tags": [
+          "Levels & Activity EXP Tracker"
+        ],
+        "summary": "Get Levels Leaderboard",
+        "description": "Fetch community level & message activity leaderboard.",
+        "operationId": "get_levels_leaderboard_api_v1_guilds__guild_id__levels_leaderboard_get",
+        "parameters": [
+          {
+            "name": "guild_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Guild Id"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "default": 10,
+              "title": "Limit"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/LeaderboardRankEntry"
+                  },
+                  "title": "Response Get Levels Leaderboard Api V1 Guilds  Guild Id  Levels Leaderboard Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/guilds/{guild_id}/members/{user_id}/xp": {
+      "post": {
+        "tags": [
+          "Levels & Activity EXP Tracker"
+        ],
+        "summary": "Adjust Member Xp",
+        "description": "Officer endpoint to manually grant or deduct member experience points.",
+        "operationId": "adjust_member_xp_api_v1_guilds__guild_id__members__user_id__xp_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "guild_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Guild Id"
+            }
+          },
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "User Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AdjustXPRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RankCardResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/guilds/{guild_id}/ai/chat": {
       "post": {
         "tags": [
@@ -2778,6 +2956,20 @@
           "badge_icon"
         ],
         "title": "AchievementResponse"
+      },
+      "AdjustXPRequest": {
+        "properties": {
+          "xp_delta": {
+            "type": "integer",
+            "title": "Xp Delta",
+            "description": "Amount of XP to add (positive) or deduct (negative)"
+          }
+        },
+        "type": "object",
+        "required": [
+          "xp_delta"
+        ],
+        "title": "AdjustXPRequest"
       },
       "AnalyticsOverviewResponse": {
         "properties": {
@@ -3497,6 +3689,44 @@
         ],
         "title": "LeaderboardEntry"
       },
+      "LeaderboardRankEntry": {
+        "properties": {
+          "rank": {
+            "type": "integer",
+            "title": "Rank"
+          },
+          "discord_user_id": {
+            "type": "string",
+            "title": "Discord User Id"
+          },
+          "level": {
+            "type": "integer",
+            "title": "Level"
+          },
+          "total_xp": {
+            "type": "integer",
+            "title": "Total Xp"
+          },
+          "messages_count": {
+            "type": "integer",
+            "title": "Messages Count"
+          },
+          "progress_percent": {
+            "type": "number",
+            "title": "Progress Percent"
+          }
+        },
+        "type": "object",
+        "required": [
+          "rank",
+          "discord_user_id",
+          "level",
+          "total_xp",
+          "messages_count",
+          "progress_percent"
+        ],
+        "title": "LeaderboardRankEntry"
+      },
       "LeaveResponse": {
         "properties": {
           "id": {
@@ -3949,6 +4179,71 @@
           "reason"
         ],
         "title": "RaiseDisputePayload"
+      },
+      "RankCardResponse": {
+        "properties": {
+          "guild_id": {
+            "type": "integer",
+            "title": "Guild Id"
+          },
+          "discord_user_id": {
+            "type": "string",
+            "title": "Discord User Id"
+          },
+          "rank": {
+            "type": "integer",
+            "title": "Rank"
+          },
+          "level": {
+            "type": "integer",
+            "title": "Level"
+          },
+          "total_xp": {
+            "type": "integer",
+            "title": "Total Xp"
+          },
+          "current_level_xp": {
+            "type": "integer",
+            "title": "Current Level Xp"
+          },
+          "xp_needed_for_next": {
+            "type": "integer",
+            "title": "Xp Needed For Next"
+          },
+          "progress_percent": {
+            "type": "number",
+            "title": "Progress Percent"
+          },
+          "messages_count": {
+            "type": "integer",
+            "title": "Messages Count"
+          },
+          "last_message_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Message At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "guild_id",
+          "discord_user_id",
+          "rank",
+          "level",
+          "total_xp",
+          "current_level_xp",
+          "xp_needed_for_next",
+          "progress_percent",
+          "messages_count",
+          "last_message_at"
+        ],
+        "title": "RankCardResponse"
       },
       "ReportScorePayload": {
         "properties": {

@@ -45,6 +45,25 @@ class AIChatCog(commands.Cog, name="AIChat"):
 
             await message.reply(reply)
 
+    @app_commands.command(name="ryujin", description="Speak directly with Ryujin (Groq-powered AI Brain)")
+    @app_commands.describe(prompt="What would you like to ask or say to Ryujin?")
+    async def ryujin_cmd(self, interaction: discord.Interaction, prompt: str):
+        """Natural top-level /ryujin command to chat with Ryujin Brain."""
+        await interaction.response.defer()
+        guild_id = interaction.guild.id if interaction.guild else 0
+
+        async with async_session_factory() as session:
+            ai_service = AIService(session)
+            reply = await ai_service.chat(
+                channel_id=interaction.channel_id or 0,
+                user_id=interaction.user.id,
+                guild_id=guild_id,
+                user_message=prompt,
+            )
+            await session.commit()
+
+        await interaction.followup.send(reply)
+
     @ai_group.command(name="chat", description="Chat directly with Ryujin Brain")
     async def chat_cmd(self, interaction: discord.Interaction, query: str):
         await interaction.response.defer()

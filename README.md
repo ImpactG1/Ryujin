@@ -77,6 +77,7 @@ Under the hood, Ryujin features **Ryujin Brain** — a Groq-powered AI layer run
 | 🛡️ **Moderation & Anti-Abuse** | Sanctions (`warn`, `mute`, `kick`, `ban`), scheduled mute expiration, audit logging with role-based PII masking (partial for mods, full for admins), and anti-abuse anomaly detection that flags for human review and **never auto-bans**. |
 | 📝 **Recruitment & Leave** | Public unauthenticated application endpoint with strict PII masking in public responses, officer review with auto-provisioning of member records, and leave requests with overlap & event conflict checks. |
 | 📊 **Dashboard Analytics API** | Comprehensive `GET /api/v1/analytics/overview` aggregating members, streaks, events, open requests, and moderation stats for dashboard consumption. |
+| 🎮 **User EXP & Level Tracker** | Tracks member message counts and activity. Anti-spam 60s cooldown, level-up notifications, `/rank` cards, and `/levels` leaderboard. |
 
 ---
 
@@ -202,7 +203,10 @@ pytest --cov=. --cov-report=term-missing
 | `/tournament bracket` | Tournaments | Everyone | View current bracket and match statuses. |
 | `/tournament dispute` | Tournaments | Participants | Raise an official dispute on match results. |
 | `/warn`, `/mute`, `/kick`, `/ban` | Moderation | Officer+ | Issue sanctions with automated mute expiry. |
-| `/ai chat` | Ryujin Brain | Everyone | Chat directly with Groq-powered Ryujin AI. |
+| `/ryujin` | Ryujin Brain | Everyone | Speak directly with Groq-powered Ryujin AI (`/ryujin prompt:...`). |
+| `/rank` | Levels | Everyone | View your or another member's rank card, level, and message count. |
+| `/levels` | Levels | Everyone | View the community chat activity and level leaderboard. |
+| `/ai chat` | Ryujin Brain | Everyone | Chat with Ryujin Brain. |
 | `/ai summary` | Ryujin Brain | Everyone | Generate an AI summary of weekly community metrics. |
 
 ---

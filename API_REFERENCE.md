@@ -155,7 +155,33 @@ CORS Enabled Origins: `http://localhost:3000`
 
 ---
 
-## 9. Dashboard Analytics Overview
+## 9. Levels & User Activity EXP Tracker
+- **GET `/guilds/{guild_id}/members/{user_id}/rank`**
+  - Returns member rank card, current level, progress percentage, total messages sent, and XP required for next level.
+  - Response:
+    ```json
+    {
+      "guild_id": 123456789,
+      "discord_user_id": "987654321",
+      "rank": 1,
+      "level": 3,
+      "total_xp": 520,
+      "current_level_xp": 45,
+      "xp_needed_for_next": 295,
+      "progress_percent": 15.3,
+      "messages_count": 84,
+      "last_message_at": "2026-11-06T11:00:00Z"
+    }
+    ```
+- **GET `/guilds/{guild_id}/levels/leaderboard?limit=10`**
+  - Returns community level and chat activity leaderboard ranked by total XP.
+- **POST `/guilds/{guild_id}/members/{user_id}/xp`** (Officer+)
+  - Body: `{"xp_delta": 250}`
+  - Manually grant or adjust a member's experience points.
+
+---
+
+## 10. Dashboard Analytics Overview
 - **GET `/api/v1/analytics/overview`** (or `/guilds/{guild_id}/analytics/overview`)
   - Response:
     ```json

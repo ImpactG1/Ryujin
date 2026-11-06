@@ -59,6 +59,7 @@ class RyujinBot(commands.Bot):
             "bot.cogs.recruitment",
             "bot.cogs.tournaments",
             "bot.cogs.moderation",
+            "bot.cogs.levels",
             "bot.cogs.ai_chat",
         ]
 

@@ -33,6 +33,7 @@ async def test_bot_dry_run_startup():
         "bot.cogs.recruitment",
         "bot.cogs.tournaments",
         "bot.cogs.moderation",
+        "bot.cogs.levels",
         "bot.cogs.ai_chat",
     ]
     for cog_name in expected_cogs:
