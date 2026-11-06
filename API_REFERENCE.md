@@ -155,17 +155,21 @@ CORS Enabled Origins: `http://localhost:3000`
 
 ---
 
-## 9. Levels & User Activity EXP Tracker
+## 9. Levels & Hunter Rank Tiers (D, C, B, A, S, SS, SSS)
 - **GET `/guilds/{guild_id}/members/{user_id}/rank`**
-  - Returns member rank card, current level, progress percentage, total messages sent, and XP required for next level.
+  - Returns member rank card, letter rank tier (`D` to `SSS`), Ryujin's shy 1-line quote, current level, and XP progression.
   - Response:
     ```json
     {
       "guild_id": 123456789,
       "discord_user_id": "987654321",
       "rank": 1,
-      "level": 3,
-      "total_xp": 520,
+      "rank_tier": "A",
+      "previous_rank_tier": "B",
+      "rank_updated_at": "2026-11-06T12:00:00Z",
+      "shy_quote": "Rank A. Keep this up and you might actually impress me.",
+      "level": 32,
+      "total_xp": 1450,
       "current_level_xp": 45,
       "xp_needed_for_next": 295,
       "progress_percent": 15.3,
@@ -174,10 +178,21 @@ CORS Enabled Origins: `http://localhost:3000`
     }
     ```
 - **GET `/guilds/{guild_id}/levels/leaderboard?limit=10`**
-  - Returns community level and chat activity leaderboard ranked by total XP.
+  - Returns community level and chat activity leaderboard ranked by total XP with `rank_tier`.
 - **POST `/guilds/{guild_id}/members/{user_id}/xp`** (Officer+)
   - Body: `{"xp_delta": 250}`
   - Manually grant or adjust a member's experience points.
+- **POST `/guilds/{guild_id}/members/{user_id}/rank/promote`** (Officer+)
+  - Body: `{"target_tier": "S", "reason": "Tournament MVP"}`
+  - Manually promotes a member to next or specified tier. Logs audit event and rank history.
+- **POST `/guilds/{guild_id}/members/{user_id}/rank/demote`** (Officer+)
+  - Body: `{"target_tier": "B", "reason": "Disciplinary demotion"}`
+  - Manually demotes a member to lower tier. Logs audit event and rank history.
+- **GET `/guilds/{guild_id}/members/{user_id}/rank/history`**
+  - Fetches the member's complete timeline of promotions and demotions.
+- **POST `/guilds/{guild_id}/members/{user_id}/rank/sync`**
+  - Body: `{"discord_tier": "S"}`
+  - Syncs the rank tier detected from Discord roles, automatically recording promotions/demotions.
 
 ---
 

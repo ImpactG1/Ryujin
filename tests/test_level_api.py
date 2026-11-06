@@ -11,9 +11,13 @@ from services.level_service import LevelService
 async def test_levels_api_endpoints(db_session):
     """
     Test level and XP REST API endpoints:
-    - GET member rank card
+    - GET member rank card (including rank_tier and shy_quote)
     - GET level leaderboard
     - POST adjust member XP (officer only)
+    - POST promote member rank (officer only)
+    - POST demote member rank (officer only)
+    - GET rank history
+    - POST sync discord rank tier
     """
     async def override_get_db():
         yield db_session
@@ -40,6 +44,8 @@ async def test_levels_api_endpoints(db_session):
         assert rank_data["total_xp"] == 150
         assert rank_data["messages_count"] == 1
         assert rank_data["rank"] == 1
+        assert rank_data["rank_tier"] == "D"
+        assert "Rank D" in rank_data["shy_quote"]
 
         # 2. Get leaderboard
         res_lb = await client.get(f"/api/v1/guilds/{guild_id}/levels/leaderboard")
@@ -47,6 +53,7 @@ async def test_levels_api_endpoints(db_session):
         lb_data = res_lb.json()
         assert len(lb_data) >= 1
         assert lb_data[0]["discord_user_id"] == str(member_id)
+        assert lb_data[0]["rank_tier"] == "D"
 
         # 3. Member attempts to adjust XP -> 403 Forbidden
         res_forbidden = await client.post(
@@ -64,5 +71,40 @@ async def test_levels_api_endpoints(db_session):
         )
         assert res_adjust.status_code == 200
         assert res_adjust.json()["total_xp"] == 350
+
+        # 5. Officer promotes member to Rank B
+        res_promo = await client.post(
+            f"/api/v1/guilds/{guild_id}/members/{member_id}/rank/promote",
+            json={"target_tier": "B", "reason": "Outstanding raid performance"},
+            headers={"Authorization": f"Bearer {officer_token}"},
+        )
+        assert res_promo.status_code == 200
+        assert res_promo.json()["rank_tier"] == "B"
+        assert res_promo.json()["previous_rank_tier"] == "D"
+
+        # 6. Officer demotes member to Rank C
+        res_demo = await client.post(
+            f"/api/v1/guilds/{guild_id}/members/{member_id}/rank/demote",
+            json={"target_tier": "C", "reason": "Inactivity"},
+            headers={"Authorization": f"Bearer {officer_token}"},
+        )
+        assert res_demo.status_code == 200
+        assert res_demo.json()["rank_tier"] == "C"
+
+        # 7. Check rank history
+        res_hist = await client.get(f"/api/v1/guilds/{guild_id}/members/{member_id}/rank/history")
+        assert res_hist.status_code == 200
+        history_entries = res_hist.json()
+        assert len(history_entries) == 2
+        assert history_entries[0]["change_type"] == "DEMOTION"
+        assert history_entries[1]["change_type"] == "PROMOTION"
+
+        # 8. Sync Discord rank tier
+        res_sync = await client.post(
+            f"/api/v1/guilds/{guild_id}/members/{member_id}/rank/sync",
+            json={"discord_tier": "S"},
+        )
+        assert res_sync.status_code == 200
+        assert res_sync.json()["rank_tier"] == "S"
 
     app.dependency_overrides.clear()

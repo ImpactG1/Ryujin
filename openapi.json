@@ -2399,7 +2399,7 @@
           "Levels & Activity EXP Tracker"
         ],
         "summary": "Get Member Rank",
-        "description": "Fetch rank card, current level, progress, and message count for a member.",
+        "description": "Fetch member rank card, letter rank tier (D..SSS), and Ryujin's shy 1-line quote.",
         "operationId": "get_member_rank_api_v1_guilds__guild_id__members__user_id__rank_get",
         "parameters": [
           {
@@ -2543,6 +2543,270 @@
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/AdjustXPRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RankCardResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/guilds/{guild_id}/members/{user_id}/rank/promote": {
+      "post": {
+        "tags": [
+          "Levels & Activity EXP Tracker"
+        ],
+        "summary": "Promote Member Rank",
+        "description": "Officer endpoint to manually promote a member's rank tier (e.g. D -> C -> B -> A -> S -> SS -> SSS).",
+        "operationId": "promote_member_rank_api_v1_guilds__guild_id__members__user_id__rank_promote_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "guild_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Guild Id"
+            }
+          },
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "User Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RankChangeRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RankCardResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/guilds/{guild_id}/members/{user_id}/rank/demote": {
+      "post": {
+        "tags": [
+          "Levels & Activity EXP Tracker"
+        ],
+        "summary": "Demote Member Rank",
+        "description": "Officer endpoint to manually demote a member's rank tier.",
+        "operationId": "demote_member_rank_api_v1_guilds__guild_id__members__user_id__rank_demote_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "guild_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Guild Id"
+            }
+          },
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "User Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RankChangeRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RankCardResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/guilds/{guild_id}/members/{user_id}/rank/history": {
+      "get": {
+        "tags": [
+          "Levels & Activity EXP Tracker"
+        ],
+        "summary": "Get Member Rank History",
+        "description": "Fetch complete promotion and demotion audit trail for a member.",
+        "operationId": "get_member_rank_history_api_v1_guilds__guild_id__members__user_id__rank_history_get",
+        "parameters": [
+          {
+            "name": "guild_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Guild Id"
+            }
+          },
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "User Id"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "default": 20,
+              "title": "Limit"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RankHistoryEntry"
+                  },
+                  "title": "Response Get Member Rank History Api V1 Guilds  Guild Id  Members  User Id  Rank History Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/guilds/{guild_id}/members/{user_id}/rank/sync": {
+      "post": {
+        "tags": [
+          "Levels & Activity EXP Tracker"
+        ],
+        "summary": "Sync Discord Rank Tier",
+        "description": "Sync member rank tier when detected from Discord roles.",
+        "operationId": "sync_discord_rank_tier_api_v1_guilds__guild_id__members__user_id__rank_sync_post",
+        "parameters": [
+          {
+            "name": "guild_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Guild Id"
+            }
+          },
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "User Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RankSyncRequest"
               }
             }
           }
@@ -3699,6 +3963,10 @@
             "type": "string",
             "title": "Discord User Id"
           },
+          "rank_tier": {
+            "type": "string",
+            "title": "Rank Tier"
+          },
           "level": {
             "type": "integer",
             "title": "Level"
@@ -3720,6 +3988,7 @@
         "required": [
           "rank",
           "discord_user_id",
+          "rank_tier",
           "level",
           "total_xp",
           "messages_count",
@@ -4194,6 +4463,36 @@
             "type": "integer",
             "title": "Rank"
           },
+          "rank_tier": {
+            "type": "string",
+            "title": "Rank Tier"
+          },
+          "previous_rank_tier": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Previous Rank Tier"
+          },
+          "rank_updated_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rank Updated At"
+          },
+          "shy_quote": {
+            "type": "string",
+            "title": "Shy Quote"
+          },
           "level": {
             "type": "integer",
             "title": "Level"
@@ -4235,15 +4534,109 @@
           "guild_id",
           "discord_user_id",
           "rank",
+          "rank_tier",
+          "shy_quote",
           "level",
           "total_xp",
           "current_level_xp",
           "xp_needed_for_next",
           "progress_percent",
-          "messages_count",
-          "last_message_at"
+          "messages_count"
         ],
         "title": "RankCardResponse"
+      },
+      "RankChangeRequest": {
+        "properties": {
+          "target_tier": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Target Tier",
+            "description": "Optional target rank tier (D, C, B, A, S, SS, SSS)"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason",
+            "description": "Reason for promotion or demotion"
+          }
+        },
+        "type": "object",
+        "title": "RankChangeRequest"
+      },
+      "RankHistoryEntry": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "from_tier": {
+            "type": "string",
+            "title": "From Tier"
+          },
+          "to_tier": {
+            "type": "string",
+            "title": "To Tier"
+          },
+          "change_type": {
+            "type": "string",
+            "title": "Change Type"
+          },
+          "actor_id": {
+            "type": "string",
+            "title": "Actor Id"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          },
+          "created_at": {
+            "type": "string",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "from_tier",
+          "to_tier",
+          "change_type",
+          "actor_id",
+          "created_at"
+        ],
+        "title": "RankHistoryEntry"
+      },
+      "RankSyncRequest": {
+        "properties": {
+          "discord_tier": {
+            "type": "string",
+            "title": "Discord Tier",
+            "description": "Rank tier detected from Discord role (D, C, B, A, S, SS, SSS)"
+          }
+        },
+        "type": "object",
+        "required": [
+          "discord_tier"
+        ],
+        "title": "RankSyncRequest"
       },
       "ReportScorePayload": {
         "properties": {

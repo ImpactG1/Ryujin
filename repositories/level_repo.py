@@ -1,7 +1,8 @@
 from typing import List, Optional
 from sqlalchemy import desc, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
-from models.level import MemberLevel
+from models.base import utc_now
+from models.level import MemberLevel, RankHistory
 
 
 class LevelRepository:
@@ -21,6 +22,9 @@ class LevelRepository:
                 discord_user_id=user_id,
                 xp=0,
                 level=0,
+                rank_tier="D",
+                previous_rank_tier=None,
+                rank_updated_at=None,
                 messages_count=0,
                 last_message_at=None,
             )
@@ -58,3 +62,65 @@ class LevelRepository:
         result = await self.session.execute(stmt)
         higher_count = result.scalar_one() or 0
         return higher_count + 1
+
+    async def record_rank_change(
+        self,
+        guild_id: int,
+        user_id: int,
+        from_tier: str,
+        to_tier: str,
+        change_type: str,
+        actor_id: int = 0,
+        reason: Optional[str] = None,
+    ) -> RankHistory:
+        """Record a promotion, demotion, or sync event in rank history."""
+        history = RankHistory(
+            guild_id=guild_id,
+            discord_user_id=user_id,
+            from_tier=from_tier,
+            to_tier=to_tier,
+            change_type=change_type,
+            actor_id=actor_id,
+            reason=reason,
+            created_at=utc_now(),
+        )
+        self.session.add(history)
+        await self.session.flush()
+        return history
+
+    async def get_rank_history(
+        self,
+        guild_id: int,
+        user_id: int,
+        limit: int = 20,
+    ) -> List[RankHistory]:
+        """Fetch rank promotion/demotion history for a member."""
+        stmt = (
+            select(RankHistory)
+            .where(
+                RankHistory.guild_id == guild_id,
+                RankHistory.discord_user_id == user_id,
+            )
+            .order_by(desc(RankHistory.created_at))
+            .limit(limit)
+        )
+        result = await self.session.execute(stmt)
+        return list(result.scalars().all())
+
+    async def get_latest_rank_change(
+        self,
+        guild_id: int,
+        user_id: int,
+    ) -> Optional[RankHistory]:
+        """Fetch the most recent rank promotion or demotion record."""
+        stmt = (
+            select(RankHistory)
+            .where(
+                RankHistory.guild_id == guild_id,
+                RankHistory.discord_user_id == user_id,
+            )
+            .order_by(desc(RankHistory.created_at))
+            .limit(1)
+        )
+        result = await self.session.execute(stmt)
+        return result.scalar_one_or_none()

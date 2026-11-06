@@ -10,7 +10,7 @@ from models.recruitment import RecruitmentApplication, LeaveRequest
 from models.tournament import Tournament, TournamentParticipant, TournamentMatch, TournamentDispute
 from models.moderation import ModerationSanction, AuditLog
 from models.ai import AIConversation, AIUsageDaily
-from models.level import MemberLevel
+from models.level import MemberLevel, RankHistory
 
 __all__ = [
     "Base",
@@ -42,5 +42,6 @@ __all__ = [
     "AIConversation",
     "AIUsageDaily",
     "MemberLevel",
+    "RankHistory",
 ]
 
